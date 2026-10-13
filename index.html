@@ -8,19 +8,6 @@
   <style>
     * { box-sizing: border-box; }
    
-<script>
-  const search = document.getElementById("search");
-  const cards = document.querySelectorAll(".card");
-
-  search.addEventListener("input", function () {
-    const query = search.value.toLowerCase();
-
-    cards.forEach(function (card) {
-      const text = card.innerText.toLowerCase();
-      card.style.display = text.includes(query) ? "" : "none";
-    });
-  });
-</script>
  body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -87,6 +74,26 @@
     }
   </style>
 </head>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const search = document.getElementById("search");
+  const cards = document.querySelectorAll(".card");
+
+  if (!search) return;
+
+  search.addEventListener("input", function () {
+    const query = search.value.toLowerCase().trim();
+
+    cards.forEach(function (card) {
+      card.style.display =
+        card.innerText.toLowerCase().includes(query)
+          ? ""
+          : "none";
+    });
+  });
+});
+</script>
 <body>
   <header>
     <h1>GGU OneStop</h1>
