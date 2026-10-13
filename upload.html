@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Resource - GGU One Stop</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .upload-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+    h2 { margin-bottom: 20px; color: #333; }
+    input[type="text"], input[type="file"] { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    button { width: 100%; padding: 10px; background: #4f46e5; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+    button:hover { background: #4338ca; }
+    #statusMsg { margin-top: 15px; font-size: 14px; color: #555; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="upload-container">
+    <h2>Upload Resource / PDF</h2>
+    <form id="uploadForm">
+      <input type="text" id="title" placeholder="Resource Title (e.g., BCA Notes)" required />
+      <input type="file" id="pdfFile" accept=".pdf" required />
+      <button type="submit" id="submitBtn">Upload Resource</button>
+    </form>
+    <p id="statusMsg"></p>
+  </div>
+
+  <!-- Supabase CDN Script -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // URL se aakhir ka '/rest/v1/' hata diya gaya hai
+    const SUPABASE_URL = 'https://dmrlbgtnntjcobctizia.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_e21JbOKbFioWArDYBKNGAQ_eHbz_5SN';
+    
+    // Supabase client initialize karein
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const uploadForm = document.getElementById('uploadForm');
+    const statusMsg = document.getElementById('statusMsg');
+
+    uploadForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const title = document.getElementById('title').value;
+      const fileInput = document.getElementById('pdfFile');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('Please select a PDF file!');
+        return;
+      }
+
+      statusMsg.innerText = 'Uploading file... Please wait.';
+
+      try {
+        // Unique file name generate karein
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+        // Supabase Storage ('RESOURCES' bucket) me file upload karein
+        const { data: storageData, error: storageError } = await supabase.storage
+          .from('RESOURCES')
+          .upload(fileName, file);
+
+        if (storageError) throw storageError;
+
+        const fileUrl = storageData.path;
+
+        // Database table ('resources') me record insert karein (published: false rahega)
+        const { error: dbError } = await supabase
+          .from('resources')
+          .insert([
+            {
+              title: title,
+              file_url: fileUrl,
+              published: false 
+            }
+          ]);
+
+        if (dbError) throw dbError;
+
+        statusMsg.innerText = 'Success! Resource uploaded and sent for Admin Approval.';
+        uploadForm.reset();
+
+      }catch (error) {
+        console.error('Error:', error.message);
+        statusMsg.innerText = 'Error: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
