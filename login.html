@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Login | GGU OneStop</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: #f1f5fb;
+    }
+
+    .card {
+      background: white;
+      width: 100%;
+      max-width: 420px;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 5px 24px #00000012;
+    }
+
+    h1 { color: #10264b; margin-top: 0; }
+    p { line-height: 1.5; color: #475569; }
+
+    label {
+      display: block;
+      margin: 16px 0 7px;
+      font-weight: bold;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 16px;
+      border: 0;
+      border-radius: 7px;
+      background: #174ea6;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled { opacity: .6; cursor: wait; }
+
+    .secondary {
+      background: #e8eef9;
+      color: #174ea6;
+    }
+
+    #message {
+      overflow-wrap: anywhere;
+      font-size: 14px;
+    }
+
+    a { color: #174ea6; }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <h1>GGU OneStop</h1>
+    <p>Student Signup / Login</p>
+
+    <form id="authForm">
+      <label for="email">Email address</label>
+      <input
+        type="email"
+        id="email"
+        autocomplete="email"
+        placeholder="Enter your email"
+        required
+      >
+
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        autocomplete="current-password"
+        minlength="6"
+        placeholder="At least 6 characters"
+        required
+      >
+
+      <button type="submit" id="loginBtn">Login</button>
+      <button type="button" class="secondary" id="signupBtn">
+        Create Student Account
+      </button>
+      <button type="button" class="secondary" id="logoutBtn" hidden>
+        Logout
+      </button>
+    </form>
+
+    <p id="message" role="status" aria-live="polite"></p>
+    <p><a href="index.html">← Back to Home</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    (() => {
+      const PROJECT_URL =
+        'https://dmrlbgtnntjcobctizia.supabase.co';
+
+      const PUBLISHABLE_KEY =
+        'sb_publishable_e21JbOKbFioWArDYBKNGAQ_eHbz_5SN';
+
+      const LOGIN_URL =
+        'https://priyanshuraj-ggvian.github.io/ggu-onestop/login.html';
+
+      const UPLOAD_URL =
+        'https://priyanshuraj-ggvian.github.io/ggu-onestop/upload.html';
+
+      const form = document.getElementById('authForm');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const loginBtn = document.getElementById('loginBtn');
+      const signupBtn = document.getElementById('signupBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const message = document.getElementById('message');
+
+      function showMessage(text, isError = false) {
+        message.textContent = text;
+        message.style.color = isError ? '#b91c1c' : '#166534';
+      }
+
+      if (!window.supabase) {
+        showMessage('Supabase library load nahi hui. Refresh karo.', true);
+        return;
+      }
+
+      const authClient = window.supabase.createClient(
+        PROJECT_URL,
+        PUBLISHABLE_KEY
+      );
+
+      function setBusy(busy) {
+        loginBtn.disabled = busy;
+        signupBtn.disabled = busy;
+        logoutBtn.disabled = busy;
+      }
+
+      async function refreshSession() {
+        const { data, error } = await authClient.auth.getSession();
+
+        if (error) {
+          showMessage(error.message, true);
+          return;
+        }
+
+        const loggedIn = !!data.session;
+
+        loginBtn.hidden = loggedIn;
+        signupBtn.hidden = loggedIn;
+        logoutBtn.hidden = !loggedIn;
+
+        emailInput.disabled = loggedIn;
+        passwordInput.disabled = loggedIn;
+
+        if (loggedIn) {
+          showMessage('Login successful! Upload page par ja sakte ho.');
+        }
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        setBusy(true);
+
+        try {
+          const { data, error } = await authClient.auth.signInWithPassword({
+            email: emailInput.value.trim(),
+            password: passwordInput.value
+          });
+
+          if (error) throw error;
+          if (!data.session) throw new Error('Login session nahi mili.');
+
+          showMessage('Login successful! Upload page khul raha hai...');
+          window.location.assign(UPLOAD_URL);
+
+        } catch (error) {
+          showMessage(error.message, true);
+        } finally {
+          setBusy(false);
+        }
+      });
+
+      signupBtn.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || password.length < 6) {
+          showMessage(
+            'Valid email aur kam se kam 6 characters ka password daalo.',
+            true
+          );
+          return;
+        }
+
+        setBusy(true);
+
+        try {
+          const { data, error } = await authClient.auth.signUp({
+            email,
+            password,
+            options: {
+              emailRedirectTo: LOGIN_URL
+            }
+          });
+
+          if (error) throw error;
+
+          if (data.session) {
+            showMessage('Account ban gaya! Upload page khul raha hai.');
+            window.location.assign(UPLOAD_URL);
+            return;
+          }
+
+          showMessage(
+            'Signup request successful! Agar email confirmation enabled hai, ' +
+            'toh inbox mein verification link check karo. Verify karne ke baad ' +
+            'is page par login karo.'
+          );
+
+        } catch (error) {
+          showMessage(error.message, true);
+        } finally {
+          setBusy(false);
+        }
+      });
+
+      logoutBtn.addEventListener('click', async () => {
+        setBusy(true);
+
+        try {
+          const { error } = await authClient.auth.signOut();
+          if (error) throw error;
+
+          showMessage('Logout successful.');
+          await refreshSession();
+
+        } catch (error) {
+          showMessage(error.message, true);
+        } finally {
+          setBusy(false);
+        }
+      });
+
+      refreshSession();
+    })();
+  </script>
+</body>
+</html>
