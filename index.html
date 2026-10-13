@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGU OneStop | Student Hub</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #18233a;
+    }
+    header {
+      background: #10264f;
+      color: white;
+      padding: 20px 8%;
+    }
+    header h1 { margin: 0 0 6px; }
+    header p { margin: 0; color: #dce7ff; }
+    nav {
+      padding: 14px 8%;
+      background: white;
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 8px #0000000d;
+    }
+    nav a { color: #173b76; text-decoration: none; }
+    main { max-width: 1100px; margin: auto; padding: 32px 20px; }
+    .hero {
+      background: #e4edff;
+      padding: 32px;
+      border-radius: 18px;
+    }
+    .hero h2 { font-size: 30px; margin-top: 0; }
+    .hero input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccd6e8;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-top: 12px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-top: 24px;
+    }
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px #10264f0d;
+    }
+    .card h3 { margin-top: 0; }
+    .card a { color: #2456a6; }
+    .notice {
+      background: #fff8df;
+      padding: 16px;
+      border-radius: 12px;
+      margin-top: 24px;
+    }
+    footer {
+      text-align: center;
+      padding: 24px;
+      background: #10264f;
+      color: white;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>GGU OneStop</h1>
+    <p>Your student hub for GGU Bilaspur</p>
+  </header>
+
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#resources">Notes & PYQs</a>
+    <a href="#notices">Notices</a>
+    <a href="#events">Events</a>
+    <a href="#opportunities">Opportunities</a>
+  </nav>
+
+  <main id="home">
+    <section class="hero">
+      <h2>Everything for your university life, in one place.</h2>
+      <p>Find study resources, useful links and student opportunities.</p>
+      <input id="search" type="search"
+        placeholder="Search student resources..."
+        aria-label="Search student resources">
+    </section>
+
+    <section class="grid" id="resources">
+      <article class="card">
+        <h3>📚 Notes & PYQs</h3>
+        <p>Find notes, previous-year questions and study material.</p>
+        <a href="#search">Explore resources</a>
+      </article>
+      <article class="card" id="notices">
+        <h3>📢 University Notices</h3>
+        <p>Keep track of announcements and important updates.</p>
+        <a href="#notices">View notice section</a>
+      </article>
+      <article class="card" id="events">
+        <h3>🎓 Events & Activities</h3>
+        <p>Discover student activities and campus events.</p>
+        <a href="#events">Explore events</a>
+      </article>
+      <article class="card" id="opportunities">
+        <h3>🚀 Opportunities</h3>
+        <p>Find internships, competitions and learning opportunities.</p>
+        <a href="#opportunities">Explore opportunities</a>
+      </article>
+    </section>
+
+    <section class="notice">
+      <strong>Student project notice</strong>
+      <p>
+        GGU OneStop is an independent student initiative and is
+        not an official university website. Always verify dates
+        and announcements through official university sources.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    GGU OneStop · Student initiative · Verify official updates
+  </footer>
+</body>
+</html>
