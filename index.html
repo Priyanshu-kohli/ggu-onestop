@@ -7,7 +7,21 @@
   <title>GGU OneStop | Student Hub</title>
   <style>
     * { box-sizing: border-box; }
-    body {
+   
+<script>
+  const search = document.getElementById("search");
+  const cards = document.querySelectorAll(".card");
+
+  search.addEventListener("input", function () {
+    const query = search.value.toLowerCase();
+
+    cards.forEach(function (card) {
+      const text = card.innerText.toLowerCase();
+      card.style.display = text.includes(query) ? "" : "none";
+    });
+  });
+</script>
+ body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f5f7fb;
