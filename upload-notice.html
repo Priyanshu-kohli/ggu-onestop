@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post Notice | GGU OneStop (Admin)</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; padding: 20px; display: flex; align-items: center; justify-content: center;
+      font-family: Arial, sans-serif; background: #f1f5fb;
+    }
+    .card { background: white; width: 100%; max-width: 480px; padding: 30px; border-radius: 14px; box-shadow: 0 5px 24px #00000012; }
+    h1 { color: #10264b; margin-top: 0; font-size: 24px; }
+    label { display: block; margin: 14px 0 6px; font-weight: bold; font-size: 14px; }
+    input[type="text"], textarea, input[type="file"] {
+      display: block; width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 14px;
+    }
+    textarea { resize: vertical; height: 90px; }
+    button {
+      width: 100%; padding: 12px; margin-top: 20px; border: 0; border-radius: 7px;
+      background: #174ea6; color: white; font-size: 16px; font-weight: bold; cursor: pointer;
+    }
+    button:hover { background: #123d82; }
+    button:disabled { opacity: .6; cursor: wait; }
+    #message { margin-top: 15px; font-size: 14px; }
+    .nav-links { margin-top: 20px; text-align: center; font-size: 14px; }
+    a { color: #174ea6; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main class="card" id="mainContainer" style="display: none;">
+    <h1>Post University Notice</h1>
+    <form id="noticeForm">
+      <label for="title">Notice Title</label>
+      <input type="text" id="title" placeholder="e.g., End Semester Examination Schedule" required>
+
+      <label for="publishedOn">Published Date</label>
+      <input type="text" id="publishedOn" placeholder="e.g., 14 Oct 2026" required>
+
+      <label for="officialUrl">External Link (Optional)</label>
+      <input type="text" id="officialUrl" placeholder="https://ggu.ac.in/circular">
+
+      <label for="pdfFile">Upload PDF File (Optional)</label>
+      <input type="file" id="pdfFile" accept="application/pdf">
+
+      <label for="content">Notice Content / Description</label>
+      <textarea id="content" placeholder="Enter detailed notice information here..." required></textarea>
+
+      <button type="submit" id="submitBtn">Publish Notice</button>
+    </form>
+    <p id="message"></p>
+    <div class="nav-links">
+      <a href="notices.html">&larr; View Notices Portal</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://dmrlbgtnntjcobctizia.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_e21JbOKbFioWArDYBKNGAQ_eHbz_5SN';
+    const supabase = window.supabase.createClient(PROJECT_URL = SUPABASE_URL, PUBLISHABLE_KEY = SUPABASE_ANON_KEY);
+
+    // APNA OFFICIAL ADMIN EMAIL YAHAN DAALEIN
+    const ADMIN_EMAIL = 'priyanshu@ggu.ac.in'; // <--- Yahan apna actual GGU email likh dena jo login ke liye use karte ho
+
+    const mainContainer = document.getElementById('mainContainer');
+    const form = document.getElementById('noticeForm');
+    const message = document.getElementById('message');
+    const submitBtn = document.getElementById('submitBtn');
+
+    async function verifyAdmin() {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user || user.email !== ADMIN_EMAIL) {
+        alert('Access Denied: Only Administrator can post notices.');
+        window.location.assign('index.html');
+        return;
+      }
+      // Agar admin hai toh form show kar do
+      mainContainer.style.display = 'block';
+    }
+
+    verifyAdmin();
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      message.textContent = 'Publishing notice, please wait...';
+      message.style.color = '#475569';
+
+      try {
+        const title = document.getElementById('title').value.trim();
+        const published_on = document.getElementById('publishedOn').value.trim();
+        const official_url = document.getElementById('officialUrl').value.trim();
+        const content = document.getElementById('content').value.trim();
+        const fileInput = document.getElementById('pdfFile');
+        const file = fileInput.files[0];
+
+        let fileUrlPath = null;
+
+        // Agar PDF select ki hai toh storage mein upload karo
+        if (file) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `notice_${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('RESOURCES') // Aap chahe toh alag bucket bana sakte hain ya yehi use karein
+            .upload(fileName, file);
+
+          if (uploadError) throw uploadError;
+          fileUrlPath = fileName;
+        }
+
+        const { error: dbError } = await supabase
+          .from('notices')
+          .insert([{ 
+            title, 
+            published_on, 
+            official_url: official_url || null,
+            file_url: fileUrlPath,
+            content, 
+            published: true 
+          }]);
+
+        if (dbError) throw dbError;
+
+        message.textContent = 'Notice published successfully!';
+        message.style.color = '#166534';
+        form.reset();
+      } catch (err) {
+        message.textContent = 'Error: ' + err.message;
+        message.style.color = '#b91c1c';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
