@@ -4,183 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GGU OneStop | Student Hub</title>
-
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      color: #18233a;
-    }
-
-    header {
-      background: #10264f;
-      color: white;
-      padding: 24px 8%;
-    }
-
-    header h1 {
-      margin: 0 0 6px;
-      font-size: 32px;
-    }
-
-    header p {
-      margin: 0;
-      color: #dce7ff;
-    }
-
-    nav {
-      padding: 15px 8%;
-      background: white;
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-      box-shadow: 0 2px 8px #0000000d;
-    }
-
-    nav a {
-      color: #173b76;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    nav a:hover {
-      color: #477de0;
-    }
-
-    main {
-      max-width: 1150px;
-      margin: auto;
-      padding: 32px 20px;
-    }
-
-    .hero {
-      background: #e4edff;
-      padding: 32px;
-      border-radius: 18px;
-    }
-
-    .hero h2 {
-      font-size: 30px;
-      margin-top: 0;
-    }
-
-    .hero p {
-      line-height: 1.6;
-    }
-
-    #search {
-      width: 100%;
-      padding: 15px;
-      border: 1px solid #ccd6e8;
-      border-radius: 10px;
-      font-size: 16px;
-      margin-top: 12px;
-      outline-color: #2456a6;
-    }
-
-    .search-help {
-      font-size: 13px;
-      color: #425779;
-      margin-bottom: 0;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(
-        auto-fit, minmax(220px, 1fr)
-      );
-      gap: 18px;
-      margin-top: 24px;
-    }
-
-    .card {
-      background: white;
-      padding: 22px;
-      border-radius: 14px;
-      box-shadow: 0 4px 15px #10264f0d;
-    }
-
-    .card h3 {
-      margin-top: 0;
-    }
-
-    .card p {
-      line-height: 1.5;
-    }
-
-    .card a {
-      color: #2456a6;
-      font-weight: 500;
-    }
-
-    .card a:hover {
-      color: #10264f;
-    }
-
-    #no-results {
-      display: none;
-      background: white;
-      padding: 22px;
-      margin-top: 20px;
-      border-radius: 12px;
-      text-align: center;
-    }
-
-    .notice {
-      background: #fff8df;
-      padding: 18px;
-      border-radius: 12px;
-      margin-top: 24px;
-      line-height: 1.6;
-    }
-
-    footer {
-      text-align: center;
-      padding: 24px;
-      background: #10264f;
-      color: white;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    @media (max-width: 600px) {
-      header {
-        padding: 22px 5%;
-      }
-
-      header h1 {
-        font-size: 27px;
-      }
-
-      nav {
-        padding: 14px 5%;
-        gap: 16px;
-      }
-
-      main {
-        padding: 22px 15px;
-      }
-
-      .hero {
-        padding: 22px;
-      }
-
-      .hero h2 {
-        font-size: 24px;
-      }
-    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f5f7fb; color: #18233a; }
+    header { background: #10264f; color: white; padding: 24px 8%; }
+    header h1 { margin: 0 0 6px; font-size: 32px; }
+    header p { margin: 0; color: #dce7ff; }
+    nav { padding: 15px 8%; background: white; display: flex; gap: 24px; flex-wrap: wrap; box-shadow: 0 2px 8px #0000000d; }
+    nav a { color: #173b76; text-decoration: none; font-weight: 600; }
+    nav a:hover { color: #477de0; }
+    main { max-width: 1150px; margin: auto; padding: 32px 20px; }
+    .hero { background: #e4edff; padding: 32px; border-radius: 18px; }
+    .hero h2 { font-size: 30px; margin-top: 0; }
+    .hero p { line-height: 1.6; }
+    #search { width: 100%; padding: 15px; border: 1px solid #ccd6e8; border-radius: 10px; font-size: 16px; margin-top: 12px; outline-color: #2456a6; }
+    .search-help { font-size: 13px; color: #425779; margin-bottom: 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 24px; }
+    .card { background: white; padding: 22px; border-radius: 14px; box-shadow: 0 4px 15px #10264f0d; }
+    .card h3 { margin-top: 0; }
+    .card p { line-height: 1.5; }
+    .card a { color: #2456a6; font-weight: 500; }
+    .card a:hover { color: #10264f; }
+    #no-results { display: none; background: white; padding: 22px; margin-top: 20px; border-radius: 12px; text-align: center; }
+    .notice { background: #fff8df; padding: 18px; border-radius: 12px; margin-top: 24px; line-height: 1.6; }
+    footer { text-align: center; padding: 24px; background: #10264f; color: white; font-size: 14px; line-height: 1.7; }
   </style>
 </head>
-
 <body>
 
   <header id="home">
@@ -189,97 +39,58 @@
   </header>
 
   <nav aria-label="Main navigation">
-    <a href="#home">Home</a>
-    <a href="#resources.html">Notes &amp; PYQs</a>
-    <a href="#notices.html">Notices</a>
-    <a href="#events.html">Events</a>
-    <a href="#opportunities.html">Opportunities</a>
-    
+    <a href="index.html">Home</a>
+    <a href="resources.html">Notes &amp; PYQs</a>
+    <a href="notices.html">Notices</a>
+    <a href="events.html">Events</a>
+    <a href="opportunities.html">Opportunities</a>
   </nav>
 
   <main>
     <section class="hero">
       <h2>Everything for your university life, in one place.</h2>
-
-      <p>
-        Find study resources, useful links and student opportunities.
-      </p>
-
-      <input
-        id="search"
-        type="search"
-        placeholder="Search notes, PYQs, notices, events..."
-        aria-label="Search student resources"
-        autocomplete="off"
-      >
-
-      <p class="search-help">
-        Try: Notes, PYQs, Notices, Events or Internships.
-      </p>
+      <p>Find study resources, useful links and student opportunities.</p>
+      <input id="search" type="search" placeholder="Search notes, PYQs, notices, events..." autocomplete="off">
+      <p class="search-help">Try: Notes, PYQs, Notices, Events or Internships.</p>
     </section>
 
     <section class="grid" id="resources">
-
-      <article class="card"
-        data-search="notes pyq pyqs previous year questions study material books syllabus assignments resources">
+      <article class="card" data-search="notes pyq pyqs previous year questions study material books syllabus assignments resources">
         <h3>📚 Notes &amp; PYQs</h3>
-        <p>
-          Find notes, previous-year questions, syllabus
-          and study material.
-        </p>
-        <!-- Upload aur View ke liye alag buttons -->
+        <p>Find notes, previous-year questions, syllabus and study material.</p>
         <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
           <a href="upload.html" style="background: #4f46e5; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">Upload Notes</a>
           <a href="view.html" style="background: #10264f; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">View Notes</a>
         </div>
       </article>
 
-      <article class="card" id="notices"
-        data-search="notice notices university announcement updates exam timetable results dates">
+      <article class="card" id="noticesCard" data-search="notice notices university announcement updates exam timetable results dates">
         <h3>📢 University Notices</h3>
-        <p>
-          Keep track of announcements, exam timetables
-          and important updates.
-        </p>
-        <a href="#notices">View notice section</a>
+        <p>Keep track of announcements, exam timetables and important updates.</p>
+        <a href="notices.html">View notice section</a>
       </article>
 
-      <article class="card" id="events"
-        data-search="event events activities campus seminar workshop fest cultural sports">
+      <article class="card" id="eventsCard" data-search="event events activities campus seminar workshop fest cultural sports">
         <h3>🎓 Events &amp; Activities</h3>
-        <p>
-          Discover student activities, workshops
-          and campus events.
-        </p>
-        <a href="#events">Explore events</a>
+        <p>Discover student activities, workshops and campus events.</p>
+        <a href="events.html">Explore events</a>
       </article>
 
-      <article class="card" id="opportunities"
-        data-search="opportunity opportunities internship internships jobs scholarship competition skills career">
+      <article class="card" id="oppCard" data-search="opportunity opportunities internship internships jobs scholarship competition skills career">
         <h3>🚀 Opportunities</h3>
-        <p>
-          Find internships, scholarships, competitions
-          and learning opportunities.
-        </p>
-        <a href="#opportunities">Explore opportunities</a>
+        <p>Find internships, scholarships, competitions and learning opportunities.</p>
+        <a href="opportunities.html">Explore opportunities</a>
       </article>
-
     </section>
 
     <section id="no-results" aria-live="polite">
       <h3>No matching resources found</h3>
-      <p>
-        Try another keyword, such as Notes, Events or Internships.
-      </p>
+      <p>Try another keyword, such as Notes, Events or Internships.</p>
     </section>
 
     <section class="notice">
       <strong>Student project notice</strong>
-      <p>
-        GGU OneStop is an independent student initiative and
-        is not an official university website. Always verify
-        dates and announcements through official university sources.
-      </p>
+      <p>GGU OneStop is an independent student initiative and is not an official university website. Always verify dates and announcements through official university sources.</p>
     </section>
   </main>
 
@@ -294,34 +105,18 @@
       const noResults = document.getElementById("no-results");
 
       function filterCards() {
-        const query = searchInput.value
-          .toLowerCase()
-          .trim();
-
+        const query = searchInput.value.toLowerCase().trim();
         let visibleCount = 0;
-
         cards.forEach(function (card) {
-          const cardText = (
-            card.innerText + " " +
-            (card.dataset.search || "")
-          ).toLowerCase();
-
+          const cardText = (card.innerText + " " + (card.dataset.search || "")).toLowerCase();
           const matches = cardText.includes(query);
-
           card.style.display = matches ? "" : "none";
-
-          if (matches) {
-            visibleCount++;
-          }
+          if (matches) visibleCount++;
         });
-
-        noResults.style.display =
-          visibleCount === 0 ? "block" : "none";
+        noResults.style.display = visibleCount === 0 ? "block" : "none";
       }
-
       searchInput.addEventListener("input", filterCards);
     });
   </script>
-
 </body>
 </html>
