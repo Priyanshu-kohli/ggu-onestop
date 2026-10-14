@@ -142,24 +142,20 @@
       const uploadBtn = document.getElementById('uploadBtn');
       const message = document.getElementById('message');
 
-      let currentUserEmail = null;
-
       function showMessage(text, isError = false) {
         message.textContent = text;
         message.style.color = isError ? '#b91c1c' : '#166534';
       }
 
-      async function checkUserSession() {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error || !session) {
+      async function verifyLogin() {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
           alert('Authentication required. Please log in first.');
           window.location.assign(LOGIN_URL);
-        } else {
-          currentUserEmail = session.user.email;
         }
       }
 
-      checkUserSession();
+      verifyLogin();
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -167,6 +163,12 @@
         showMessage('Uploading file, please wait...');
 
         try {
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          if (userError || !user) {
+            throw new Error('User session expired. Please log in again.');
+          }
+
+          const userEmail = user.email;
           const title = titleInput.value.trim();
           const department = deptInput.value;
           const semester = semInput.value;
@@ -192,7 +194,7 @@
                 semester: semester,
                 file_url: fileName, 
                 published: false,
-                uploaded_by: currentUserEmail
+                uploaded_by: userEmail
               }
             ]);
 
