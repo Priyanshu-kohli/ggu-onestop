@@ -32,23 +32,23 @@
 <body>
   <main class="card">
     <h1>Upload Notes / PDF</h1>
-    <p>Apna Department aur Semester select karke PDF submit karein.</p>
+    <p>Please select your Department and Semester, then submit the PDF.</p>
 
     <form id="uploadForm">
       <label for="title">Resource Title</label>
-      <input type="text" id="title" placeholder="jaise: B.Sc Chemistry Notes" required>
+      <input type="text" id="title" placeholder="e.g., B.Sc Chemistry Notes" required>
 
       <label for="department">Department / School</label>
       <select id="department" required>
         <option value="">-- Select Department --</option>
         <optgroup label="School of Studies in Engineering & Technology">
-          <option value="Computer Science & Engineering">Computer Science & Engineering (SoS E&T)</option>
+          <option value="Computer Science & Engineering">Computer Science & Engineering</option>
           <option value="Information Technology">Information Technology</option>
-          <option value="Electronics & Communication">Electronics & Communication Engineering</option>
+          <option value="Electronics & Communication">Electronics & Communication</option>
           <option value="Mechanical Engineering">Mechanical Engineering</option>
           <option value="Civil Engineering">Civil Engineering</option>
           <option value="Chemical Engineering">Chemical Engineering</option>
-          <option value="Industrial & Production">Industrial & Production Engineering</option>
+          <option value="Industrial & Production">Industrial & Production</option>
         </optgroup>
         <optgroup label="School of Studies in Mathematical & Computational Sciences">
           <option value="Computer Science (MCA/M.Sc)">Computer Science (MCA / M.Sc)</option>
@@ -69,10 +69,10 @@
           <option value="Forensic Science">Forensic Science</option>
         </optgroup>
         <optgroup label="Other Major Departments">
-          <option value="Pharmacy">Pharmacy (SOS)</option>
+          <option value="Pharmacy">Pharmacy</option>
           <option value="Management Studies">Management Studies (MBA)</option>
           <option value="Commerce">Commerce & Financial Studies</option>
-          <option value="Law">Law (Department of Law)</option>
+          <option value="Law">Law</option>
           <option value="Economics">Economics</option>
           <option value="English">English & Foreign Languages</option>
           <option value="Journalism & Mass Comm">Journalism & Mass Communication</option>
@@ -137,7 +137,7 @@
       async function checkUserSession() {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error || !session) {
-          alert('Pehle login karna zaroori hai!');
+          alert('Login is required to upload notes!');
           window.location.assign(LOGIN_URL);
         }
       }
@@ -155,7 +155,7 @@
           const semester = semInput.value;
           const file = fileInput.files[0];
 
-          if (!file) throw new Error('Koi PDF file select karein.');
+          if (!file) throw new Error('Please select a PDF file.');
 
           const fileExt = file.name.split('.').pop();
           const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
@@ -180,11 +180,11 @@
 
           if (dbError) throw dbError;
 
-          showMessage('Upload successful! Admin approval ke baad yeh list mein dikhega.');
+          showMessage('Upload successful! It will appear in the public list after admin approval.');
           form.reset();
 
         } catch (err) {
-          showMessage('Upload fail hua: ' + err.message, true);
+          showMessage('Upload failed: ' + err.message, true);
         } finally {
           uploadBtn.disabled = false;
         }
