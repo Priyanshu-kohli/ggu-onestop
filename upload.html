@@ -125,9 +125,9 @@
           const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
           const filePath = `${fileName}`;
 
-          // 2. Supabase Storage (RESOURCES bucket) mein upload karein
+          // 2. Supabase Storage (resources bucket) mein upload karein
           const { error: uploadError } = await supabase.storage
-            .from('RESOURCES')
+            .from('resources')
             .upload(filePath, file);
 
           if (uploadError) throw uploadError;
