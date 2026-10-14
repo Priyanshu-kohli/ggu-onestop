@@ -142,6 +142,8 @@
       const uploadBtn = document.getElementById('uploadBtn');
       const message = document.getElementById('message');
 
+      let currentUserEmail = null;
+
       function showMessage(text, isError = false) {
         message.textContent = text;
         message.style.color = isError ? '#b91c1c' : '#166534';
@@ -152,6 +154,8 @@
         if (error || !session) {
           alert('Authentication required. Please log in first.');
           window.location.assign(LOGIN_URL);
+        } else {
+          currentUserEmail = session.user.email;
         }
       }
 
@@ -187,7 +191,8 @@
                 department: department,
                 semester: semester,
                 file_url: fileName, 
-                published: false 
+                published: false,
+                uploaded_by: currentUserEmail
               }
             ]);
 
