@@ -23,16 +23,16 @@
   <!-- Supabase CDN Script -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // Yahan hum variable ka naam badal kar 'dbClient' rakh rahe hain taaki duplicate declaration error khatam ho jaye
     const SUPABASE_URL = 'https://dmrlbgtnntjcobctizia.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_e21JbOKbFioWArDYBKNGAQ_eHbz_5SN';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     async function fetchResources() {
       const listDiv = document.getElementById('resourcesList');
       
       try {
-        // Sirf wahi resources fetch honge jo approved (published: true) hain
-        const { data, error } = await supabase
+        const { data, error } = await dbClient
           .from('resources')
           .select('*')
           .eq('published', true)
@@ -48,7 +48,7 @@
         listDiv.innerHTML = '';
         
         data.forEach(item => {
-          const { data: publicURLData } = supabase.storage
+          const { data: publicURLData } = dbClient.storage
             .from('RESOURCES')
             .getPublicUrl(item.file_url);
 
