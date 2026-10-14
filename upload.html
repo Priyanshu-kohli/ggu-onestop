@@ -62,7 +62,7 @@
 
     <form id="uploadForm">
       <label for="title">Resource Title</label>
-      <input type="text" id="title" placeholder=" jaise: B.Sc Maths Notes" required>
+      <input type="text" id="title" placeholder="jaise: B.Sc Maths Notes" required>
 
       <label for="pdfFile">Select PDF File</label>
       <input type="file" id="pdfFile" accept="application/pdf" required>
@@ -73,7 +73,7 @@
     <p id="message" role="status"></p>
 
     <div class="nav-links">
-      <a href="index.html">← Back to Home</a>
+      <a href="index.html">&larr; Back to Home</a>
       <a href="login.html" id="authLink">Logout / Switch Account</a>
     </div>
   </main>
@@ -98,7 +98,6 @@
         message.style.color = isError ? '#b91c1c' : '#166534';
       }
 
-      // Check karein ki user logged in hai ya nahi
       async function checkUserSession() {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error || !session) {
@@ -120,21 +119,20 @@
 
           if (!file) throw new Error('Koi PDF file select karein.');
 
-          // 1. Unique file path banayein
           const fileExt = file.name.split('.').pop();
           const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
           const filePath = `${fileName}`;
 
-          // 2. Supabase Storage (RESOURCES bucket) mein upload karein
+          // Storage bucket 'RESOURCES' mein upload hoga
           const { error: uploadError } = await supabase.storage
             .from('RESOURCES')
             .upload(filePath, file);
 
           if (uploadError) throw uploadError;
 
-          // 3. Database (RESOURCES table) mein record insert karein
+          // Database table lowercase 'resources' mein insert hoga
           const { error: dbError } = await supabase
-            .from('RESOURCES')
+            .from('resources')
             .insert([
               { 
                 title: title, 
