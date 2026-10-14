@@ -1,235 +1,160 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Upload Notes | GGU OneStop</title>
-
   <style>
     * { box-sizing: border-box; }
-
     body {
-      font-family: Arial, sans-serif;
-      background: #f3f6fb;
       margin: 0;
       min-height: 100vh;
-      display: grid;
-      place-items: center;
       padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: #f1f5fb;
     }
-
     .card {
       background: white;
-      padding: 28px;
-      border-radius: 12px;
-      box-shadow: 0 4px 18px #00000012;
       width: 100%;
-      max-width: 440px;
+      max-width: 450px;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 5px 24px #00000012;
     }
-
-    h1 { font-size: 25px; color: #10264b; }
-
-    label {
+    h1 { color: #10264b; margin-top: 0; font-size: 24px; }
+    p { line-height: 1.5; color: #475569; font-size: 14px; }
+    label { display: block; margin: 16px 0 7px; font-weight: bold; font-size: 14px; }
+    input[type="text"], input[type="file"] {
       display: block;
-      margin: 16px 0 7px;
-      font-weight: bold;
-    }
-
-    input {
       width: 100%;
-      padding: 11px;
-      border: 1px solid #ccd3df;
-      border-radius: 6px;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-size: 15px;
     }
-
     button {
       width: 100%;
       padding: 12px;
       margin-top: 20px;
+      border: 0;
+      border-radius: 7px;
       background: #174ea6;
       color: white;
-      border: 0;
-      border-radius: 6px;
-      cursor: pointer;
       font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
     }
-
+    button:hover { background: #123d82; }
     button:disabled { opacity: .6; cursor: wait; }
-
-    #statusMsg {
-      margin-top: 16px;
-      line-height: 1.5;
-      overflow-wrap: anywhere;
-    }
-
-    .back { display: inline-block; margin-top: 18px; }
+    #message { margin-top: 15px; font-size: 14px; overflow-wrap: anywhere; }
+    .nav-links { margin-top: 20px; display: flex; justify-content: space-between; font-size: 14px; }
+    a { color: #174ea6; text-decoration: none; }
+    a:hover { text-decoration: underline; }
   </style>
 </head>
-
 <body>
   <main class="card">
     <h1>Upload Notes / PDF</h1>
-    <p>PDF submit karo. Admin approval ke baad hi publish hoga.</p>
+    <p>PDF submit karo. Admin approval ke baad hi ye public view mein show hoga.</p>
 
-    <form id="gguUploadForm">
-      <label for="gguTitle">Resource title</label>
-      <input id="gguTitle" type="text"
-             placeholder="e.g. BCA Semester 1 Notes"
-             maxlength="150" required>
+    <form id="uploadForm">
+      <label for="title">Resource Title</label>
+      <input type="text" id="title" placeholder=" jaise: B.Sc Maths Notes" required>
 
-      <label for="gguPdf">Choose PDF</label>
-      <input id="gguPdf" type="file"
-             accept=".pdf,application/pdf" required>
+      <label for="pdfFile">Select PDF File</label>
+      <input type="file" id="pdfFile" accept="application/pdf" required>
 
-      <button id="gguSubmit" type="submit">Upload Resource</button>
+      <button type="submit" id="uploadBtn">Upload Resource</button>
     </form>
 
-    <p id="gguStatus" role="status" aria-live="polite"></p>
-    <a class="back" href="resources.html">← Back to Resources</a>
+    <p id="message" role="status"></p>
+
+    <div class="nav-links">
+      <a href="index.html">← Back to Home</a>
+      <a href="login.html" id="authLink">Logout / Switch Account</a>
+    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
-  (function () {
-    const SUPABASE_URL =
-      'https://dmrlbgtnntjcobctizia.supabase.co';
+    (() => {
+      const PROJECT_URL = 'https://dmrlbgtnntjcobctizia.supabase.co';
+      const PUBLISHABLE_KEY = 'sb_publishable_e21JbOKbFioWArDYBKNGAQ_eHbz_5SN';
+      const LOGIN_URL = 'https://priyanshuraj-ggvian.github.io/ggu-onestop/login.html';
 
-    const SUPABASE_KEY =
-      'sb_publishable_e21JbOKbFioWArDYBKNGAQ_eHbz_5SN';
+      const supabase = window.supabase.createClient(PROJECT_URL, PUBLISHABLE_KEY);
 
-    const BUCKET = 'RESOURCES';
+      const form = document.getElementById('uploadForm');
+      const titleInput = document.getElementById('title');
+      const fileInput = document.getElementById('pdfFile');
+      const uploadBtn = document.getElementById('uploadBtn');
+      const message = document.getElementById('message');
 
-    const form = document.getElementById('gguUploadForm');
-    const titleInput = document.getElementById('gguTitle');
-    const fileInput = document.getElementById('gguPdf');
-    const button = document.getElementById('gguSubmit');
-    const status = document.getElementById('gguStatus');
-
-    function message(text, error) {
-      status.textContent = text;
-      status.style.color = error ? '#b91c1c' : '#166534';
-    }
-
-    if (!window.supabase ||
-        typeof window.supabase.createClient !== 'function') {
-      message('Supabase library load nahi hui. Page refresh karo.', true);
-      return;
-    }
-
-    // Unique variable name; global "supabase" variable declare nahi hota.
-    const gguClient = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
-
-    form.addEventListener('submit', async function (event) {
-      event.preventDefault();
-
-      if (button.disabled) return;
-
-      const title = titleInput.value.trim();
-      const file = fileInput.files[0];
-
-      if (!title || !file) {
-        message('Title aur PDF select karo.', true);
-        return;
+      function showMessage(text, isError = false) {
+        message.textContent = text;
+        message.style.color = isError ? '#b91c1c' : '#166534';
       }
 
-      if (!file.name.toLowerCase().endsWith('.pdf') ||
-          (file.type && file.type !== 'application/pdf')) {
-        message('Sirf PDF file upload karo.', true);
-        return;
-      }
-
-      if (file.size > 15 * 1024 * 1024) {
-        message('PDF 15 MB se chhoti honi chahiye.', true);
-        return;
-      }
-
-      button.disabled = true;
-
-      let uploadedPath = null;
-
-      try {
-        message('Login check ho raha hai...');
-
-        const { data: authData, error: authError } =
-          await gguClient.auth.getUser();
-
-        if (authError) throw authError;
-
-        const user = authData.user;
-
-        if (!user) {
-          message(
-            'Upload karne ke liye pehle student signup/login zaroori hai.',
-            true
-          );
-          return;
+      // Check karein ki user logged in hai ya nahi
+      async function checkUserSession() {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error || !session) {
+          alert('Pehle login karna zaroori hai!');
+          window.location.assign(LOGIN_URL);
         }
-
-        const filename = crypto.randomUUID() + '.pdf';
-        uploadedPath = user.id + '/' + filename;
-
-        message('PDF Storage mein upload ho raha hai...');
-
-        const { error: storageError } = await gguClient.storage
-          .from(BUCKET)
-          .upload(uploadedPath, file, {
-            contentType: 'application/pdf',
-            upsert: false
-          });
-
-        if (storageError) throw storageError;
-
-        message('PDF upload ho gaya. Database record save ho raha hai...');
-
-        const { error: dbError } = await gguClient
-          .from('resources')
-          .insert({
-            title: title,
-            file_url: uploadedPath,
-            published: false,
-            user_id: user.id
-          });
-
-        if (dbError) {
-          // Failed database insert ke baad file remove karne ki koshish.
-          const { error: removeError } = await gguClient.storage
-            .from(BUCKET)
-            .remove([uploadedPath]);
-
-          if (removeError) {
-            console.error('Storage cleanup error:', removeError.message);
-          }
-
-          uploadedPath = null;
-          throw dbError;
-        }
-
-        uploadedPath = null;
-        form.reset();
-
-        message(
-          'PDF submit ho gaya! Admin approval ke baad publish hoga.',
-          false
-        );
-
-      } catch (error) {
-        console.error('GGU upload error:', error);
-
-        message(
-          'Upload fail hua: ' +
-          (error.message || 'Unknown error'),
-          true
-        );
-      } finally {
-        button.disabled = false;
       }
-    });
-  })();
+
+      checkUserSession();
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        uploadBtn.disabled = true;
+        showMessage('Uploading file, please wait...');
+
+        try {
+          const title = titleInput.value.trim();
+          const file = fileInput.files[0];
+
+          if (!file) throw new Error('Koi PDF file select karein.');
+
+          // 1. Unique file path banayein
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+          const filePath = `${fileName}`;
+
+          // 2. Supabase Storage (RESOURCES bucket) mein upload karein
+          const { error: uploadError } = await supabase.storage
+            .from('RESOURCES')
+            .upload(filePath, file);
+
+          if (uploadError) throw uploadError;
+
+          // 3. Database (resources table) mein record insert karein
+          const { error: dbError } = await supabase
+            .from('resources')
+            .insert([
+              { 
+                title: title, 
+                file_url: filePath, 
+                published: false 
+              }
+            ]);
+
+          if (dbError) throw dbError;
+
+          showMessage('Upload successful! Admin approval ke baad yeh list mein dikhega.');
+          form.reset();
+
+        } catch (err) {
+          showMessage('Upload fail hua: ' + err.message, true);
+        } finally {
+          uploadBtn.disabled = false;
+        }
+      });
+    })();
   </script>
 </body>
 </html>
