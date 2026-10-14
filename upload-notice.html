@@ -60,9 +60,8 @@
     const SUPABASE_URL = 'https://dmrlbgtnntjcobctizia.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_e21JbOKbFioWArDYBKNGAQ_eHbz_5SN';
     const dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Apna official admin email yahan daalein
-    const ADMIN_EMAIL = 'priyanshu@ggu.ac.in'; // <--- Apni actual login email yahan likhna
+    
+    const ADMIN_EMAIL = 'priyanshu.ggvian@gmail.com';
 
     const mainContainer = document.getElementById('mainContainer');
     const form = document.getElementById('noticeForm');
@@ -73,7 +72,7 @@
       const { data: { user }, error } = await dbClient.auth.getUser();
       if (error || !user || user.email !== ADMIN_EMAIL) {
         alert('Access Denied: Only Administrator can post notices.');
-        window.location.assign('index.html');
+        window.location.assign('notices.html');
         return;
       }
       mainContainer.style.display = 'block';
