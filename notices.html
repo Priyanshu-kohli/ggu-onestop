@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>University Notices | GGU OneStop</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; }
+    .container { max-width: 850px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    h2 { color: #333; margin-bottom: 20px; text-align: center; }
+    .notice-card { background: #f9fafb; padding: 18px; margin-bottom: 15px; border-radius: 6px; border-left: 4px solid #174ea6; border: 1px solid #e5e7eb; }
+    .notice-title { font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 6px; }
+    .notice-meta { font-size: 12px; color: #6b7280; margin-bottom: 10px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .notice-content { font-size: 14px; color: #374151; line-height: 1.5; margin-bottom: 12px; }
+    .official-link { display: inline-block; background: #174ea6; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; }
+    .official-link:hover { background: #123d82; }
+    .nav-links { margin-top: 20px; text-align: center; }
+    a { color: #174ea6; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>University Notices & Announcements</h2>
+    <div id="noticesList">Loading notices...</div>
+    <div class="nav-links">
+      <a href="index.html">&larr; Back to Home</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://dmrlbgtnntjcobctizia.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_e21JbOKbFioWArDYBKNGAQ_eHbz_5SN';
+    const dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function fetchNotices() {
+      const listDiv = document.getElementById('noticesList');
+      try {
+        const { data, error } = await dbClient
+          .from('notices')
+          .select('*')
+          .eq('published', true)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          listDiv.innerHTML = '<p>No published notices available right now.</p>';
+          return;
+        }
+
+        listDiv.innerHTML = '';
+        data.forEach(notice => {
+          const card = document.createElement('div');
+          card.className = 'notice-card';
+
+          let linkHtml = '';
+          if (notice.official_url) {
+            linkHtml = `<a href="${notice.official_url}" target="_blank" class="official-link">View Official Circular / Link</a>`;
+          }
+
+          card.innerHTML = `
+            <div class="notice-title">${notice.title}</div>
+            <div class="notice-meta">
+              <span>Published On: ${notice.published_on || 'N/A'}</span>
+            </div>
+            <div class="notice-content">${notice.content || ''}</div>
+            ${linkHtml}
+          `;
+          listDiv.appendChild(card);
+        });
+      } catch (err) {
+        listDiv.innerHTML = '<p style="color: red;">Error loading notices: ' + err.message + '</p>';
+      }
+    }
+
+    fetchNotices();
+  </script>
+</body>
+</html>
