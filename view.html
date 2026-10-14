@@ -23,7 +23,6 @@
   <!-- Supabase CDN Script -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Yahan hum variable ka naam badal kar 'dbClient' rakh rahe hain taaki duplicate declaration error khatam ho jaye
     const SUPABASE_URL = 'https://dmrlbgtnntjcobctizia.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_e21JbOKbFioWArDYBKNGAQ_eHbz_5SN';
     const dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -32,11 +31,11 @@
       const listDiv = document.getElementById('resourcesList');
       
       try {
+        // Bina created_at sorting ke data fetch kar rahe hain
         const { data, error } = await dbClient
           .from('resources')
           .select('*')
-          .eq('published', true)
-          .order('created_at', { ascending: false });
+          .eq('published', true);
 
         if (error) throw error;
 
