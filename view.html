@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>View resources - GGU One Stop</title>
+  <title>View RESOURCES - GGU One Stop</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; }
     .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -16,8 +16,8 @@
 </head>
 <body>
   <div class="container">
-    <h2>Approved Notes & resources</h2>
-    <div id="resourcesList">Loading resources...</div>
+    <h2>Approved Notes & RESOURCES</h2>
+    <div id="RESOURCESList">Loading RESOURCES...</div>
   </div>
 
   <!-- Supabase CDN Script -->
@@ -27,20 +27,20 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_e21JbOKbFioWArDYBKNGAQ_eHbz_5SN';
     const dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function fetchresources() {
-      const listDiv = document.getElementById('resourcesList');
+    async function fetchRESOURCES() {
+      const listDiv = document.getElementById('RESOURCESList');
       
       try {
         // Bina created_at sorting ke data fetch kar rahe hain
         const { data, error } = await dbClient
-          .from('resources')
+          .from('RESOURCES')
           .select('*')
           .eq('published', true);
 
         if (error) throw error;
 
         if (!data || data.length === 0) {
-          listDiv.innerHTML = '<p>No approved resources available yet.</p>';
+          listDiv.innerHTML = '<p>No approved RESOURCES available yet.</p>';
           return;
         }
 
@@ -48,7 +48,7 @@
         
         data.forEach(item => {
           const { data: publicURLData } = dbClient.storage
-            .from('resources')
+            .from('RESOURCES')
             .getPublicUrl(item.file_url);
 
           const card = document.createElement('div');
@@ -62,11 +62,11 @@
 
       } catch (err) {
         console.error('Error:', err.message);
-        listDiv.innerHTML = '<p style="color: red;">Error loading resources: ' + err.message + '</p>';
+        listDiv.innerHTML = '<p style="color: red;">Error loading RESOURCES: ' + err.message + '</p>';
       }
     }
 
-    fetchresources();
+    fetchRESOURCES();
   </script>
 </body>
 </html>
