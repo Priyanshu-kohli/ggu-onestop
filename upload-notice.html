@@ -59,10 +59,10 @@
   <script>
     const SUPABASE_URL = 'https://dmrlbgtnntjcobctizia.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_e21JbOKbFioWArDYBKNGAQ_eHbz_5SN';
-    const supabase = window.supabase.createClient(PROJECT_URL = SUPABASE_URL, PUBLISHABLE_KEY = SUPABASE_ANON_KEY);
+    const dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // APNA OFFICIAL ADMIN EMAIL YAHAN DAALEIN
-    const ADMIN_EMAIL = 'priyanshu@ggu.ac.in'; // <--- Yahan apna actual GGU email likh dena jo login ke liye use karte ho
+    // Apna official admin email yahan daalein
+    const ADMIN_EMAIL = 'priyanshu@ggu.ac.in'; // <--- Apni actual login email yahan likhna
 
     const mainContainer = document.getElementById('mainContainer');
     const form = document.getElementById('noticeForm');
@@ -70,13 +70,12 @@
     const submitBtn = document.getElementById('submitBtn');
 
     async function verifyAdmin() {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const { data: { user }, error } = await dbClient.auth.getUser();
       if (error || !user || user.email !== ADMIN_EMAIL) {
         alert('Access Denied: Only Administrator can post notices.');
         window.location.assign('index.html');
         return;
       }
-      // Agar admin hai toh form show kar do
       mainContainer.style.display = 'block';
     }
 
@@ -98,20 +97,19 @@
 
         let fileUrlPath = null;
 
-        // Agar PDF select ki hai toh storage mein upload karo
         if (file) {
           const fileExt = file.name.split('.').pop();
           const fileName = `notice_${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
           
-          const { error: uploadError } = await supabase.storage
-            .from('RESOURCES') // Aap chahe toh alag bucket bana sakte hain ya yehi use karein
+          const { error: uploadError } = await dbClient.storage
+            .from('RESOURCES')
             .upload(fileName, file);
 
           if (uploadError) throw uploadError;
           fileUrlPath = fileName;
         }
 
-        const { error: dbError } = await supabase
+        const { error: dbError } = await dbClient
           .from('notices')
           .insert([{ 
             title, 
