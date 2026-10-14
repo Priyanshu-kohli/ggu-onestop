@@ -7,45 +7,19 @@
   <style>
     * { box-sizing: border-box; }
     body {
-      margin: 0;
-      min-height: 100vh;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: Arial, sans-serif;
-      background: #f1f5fb;
+      margin: 0; min-height: 100vh; padding: 20px; display: flex; align-items: center; justify-content: center;
+      font-family: Arial, sans-serif; background: #f1f5fb;
     }
-    .card {
-      background: white;
-      width: 100%;
-      max-width: 450px;
-      padding: 30px;
-      border-radius: 14px;
-      box-shadow: 0 5px 24px #00000012;
-    }
+    .card { background: white; width: 100%; max-width: 480px; padding: 30px; border-radius: 14px; box-shadow: 0 5px 24px #00000012; }
     h1 { color: #10264b; margin-top: 0; font-size: 24px; }
     p { line-height: 1.5; color: #475569; font-size: 14px; }
-    label { display: block; margin: 16px 0 7px; font-weight: bold; font-size: 14px; }
-    input[type="text"], input[type="file"] {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 7px;
-      font-size: 15px;
+    label { display: block; margin: 14px 0 6px; font-weight: bold; font-size: 14px; }
+    input[type="text"], select, input[type="file"] {
+      display: block; width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 14px;
     }
     button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      border: 0;
-      border-radius: 7px;
-      background: #174ea6;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
+      width: 100%; padding: 12px; margin-top: 20px; border: 0; border-radius: 7px;
+      background: #174ea6; color: white; font-size: 16px; font-weight: bold; cursor: pointer;
     }
     button:hover { background: #123d82; }
     button:disabled { opacity: .6; cursor: wait; }
@@ -58,11 +32,71 @@
 <body>
   <main class="card">
     <h1>Upload Notes / PDF</h1>
-    <p>PDF submit karo. Admin approval ke baad hi ye public view mein show hoga.</p>
+    <p>Apna Department aur Semester select karke PDF submit karein.</p>
 
     <form id="uploadForm">
       <label for="title">Resource Title</label>
-      <input type="text" id="title" placeholder="jaise: B.Sc Maths Notes" required>
+      <input type="text" id="title" placeholder="jaise: B.Sc Chemistry Notes" required>
+
+      <label for="department">Department / School</label>
+      <select id="department" required>
+        <option value="">-- Select Department --</option>
+        <optgroup label="School of Studies in Engineering & Technology">
+          <option value="Computer Science & Engineering">Computer Science & Engineering (SoS E&T)</option>
+          <option value="Information Technology">Information Technology</option>
+          <option value="Electronics & Communication">Electronics & Communication Engineering</option>
+          <option value="Mechanical Engineering">Mechanical Engineering</option>
+          <option value="Civil Engineering">Civil Engineering</option>
+          <option value="Chemical Engineering">Chemical Engineering</option>
+          <option value="Industrial & Production">Industrial & Production Engineering</option>
+        </optgroup>
+        <optgroup label="School of Studies in Mathematical & Computational Sciences">
+          <option value="Computer Science (MCA/M.Sc)">Computer Science (MCA / M.Sc)</option>
+          <option value="Mathematics">Mathematics</option>
+          <option value="Statistics">Statistics</option>
+        </optgroup>
+        <optgroup label="School of Studies in Physical Sciences">
+          <option value="Physics">Physics</option>
+          <option value="Chemistry">Chemistry</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Pure & Applied Physics">Pure & Applied Physics</option>
+        </optgroup>
+        <optgroup label="School of Studies in Life Sciences">
+          <option value="Botany">Botany</option>
+          <option value="Zoology">Zoology</option>
+          <option value="Biotechnology">Biotechnology</option>
+          <option value="Microbiology">Microbiology</option>
+          <option value="Forensic Science">Forensic Science</option>
+        </optgroup>
+        <optgroup label="Other Major Departments">
+          <option value="Pharmacy">Pharmacy (SOS)</option>
+          <option value="Management Studies">Management Studies (MBA)</option>
+          <option value="Commerce">Commerce & Financial Studies</option>
+          <option value="Law">Law (Department of Law)</option>
+          <option value="Economics">Economics</option>
+          <option value="English">English & Foreign Languages</option>
+          <option value="Journalism & Mass Comm">Journalism & Mass Communication</option>
+          <option value="Rural Technology">Rural Technology & Social Development</option>
+          <option value="Forestry">Forestry, Wildlife & Environmental Sciences</option>
+          <option value="Social Work">Social Work</option>
+          <option value="History">History</option>
+          <option value="Political Science">Political Science</option>
+          <option value="Hindi">Hindi</option>
+        </optgroup>
+      </select>
+
+      <label for="semester">Semester</label>
+      <select id="semester" required>
+        <option value="">-- Select Semester --</option>
+        <option value="1st Semester">1st Semester</option>
+        <option value="2nd Semester">2nd Semester</option>
+        <option value="3rd Semester">3rd Semester</option>
+        <option value="4th Semester">4th Semester</option>
+        <option value="5th Semester">5th Semester</option>
+        <option value="6th Semester">6th Semester</option>
+        <option value="7th Semester">7th Semester</option>
+        <option value="8th Semester">8th Semester</option>
+      </select>
 
       <label for="pdfFile">Select PDF File</label>
       <input type="file" id="pdfFile" accept="application/pdf" required>
@@ -74,7 +108,7 @@
 
     <div class="nav-links">
       <a href="index.html">&larr; Back to Home</a>
-      <a href="login.html" id="authLink">Logout / Switch Account</a>
+      <a href="login.html">Logout</a>
     </div>
   </main>
 
@@ -89,6 +123,8 @@
 
       const form = document.getElementById('uploadForm');
       const titleInput = document.getElementById('title');
+      const deptInput = document.getElementById('department');
+      const semInput = document.getElementById('semester');
       const fileInput = document.getElementById('pdfFile');
       const uploadBtn = document.getElementById('uploadBtn');
       const message = document.getElementById('message');
@@ -115,28 +151,29 @@
 
         try {
           const title = titleInput.value.trim();
+          const department = deptInput.value;
+          const semester = semInput.value;
           const file = fileInput.files[0];
 
           if (!file) throw new Error('Koi PDF file select karein.');
 
           const fileExt = file.name.split('.').pop();
           const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
-          const filePath = `${fileName}`;
 
-          // Storage bucket 'RESOURCES' mein upload hoga
           const { error: uploadError } = await supabase.storage
             .from('RESOURCES')
-            .upload(filePath, file);
+            .upload(fileName, file);
 
           if (uploadError) throw uploadError;
 
-          // Database table lowercase 'resources' mein insert hoga
           const { error: dbError } = await supabase
             .from('resources')
             .insert([
               { 
                 title: title, 
-                file_url: filePath, 
+                department: department,
+                semester: semester,
+                file_url: fileName, 
                 published: false 
               }
             ]);
