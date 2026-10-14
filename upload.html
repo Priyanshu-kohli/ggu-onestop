@@ -7,10 +7,23 @@
   <style>
     * { box-sizing: border-box; }
     body {
-      margin: 0; min-height: 100vh; padding: 20px; display: flex; align-items: center; justify-content: center;
-      font-family: Arial, sans-serif; background: #f1f5fb;
+      margin: 0; 
+      min-height: 100vh; 
+      padding: 20px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      font-family: Arial, sans-serif; 
+      background: #f1f5fb;
     }
-    .card { background: white; width: 100%; max-width: 480px; padding: 30px; border-radius: 14px; box-shadow: 0 5px 24px #00000012; }
+    .card { 
+      background: white; 
+      width: 100%; 
+      max-width: 480px; 
+      padding: 30px; 
+      border-radius: 14px; 
+      box-shadow: 0 5px 24px #00000012; 
+    }
     h1 { color: #10264b; margin-top: 0; font-size: 24px; }
     p { line-height: 1.5; color: #475569; font-size: 14px; }
     label { display: block; margin: 14px 0 6px; font-weight: bold; font-size: 14px; }
@@ -31,12 +44,12 @@
 </head>
 <body>
   <main class="card">
-    <h1>Upload Notes / PDF</h1>
-    <p>Please select your Department and Semester, then submit the PDF.</p>
+    <h1>Upload Academic Resources</h1>
+    <p>Select your Department and Semester, then upload your PDF document for review.</p>
 
     <form id="uploadForm">
       <label for="title">Resource Title</label>
-      <input type="text" id="title" placeholder="e.g., B.Sc Chemistry Notes" required>
+      <input type="text" id="title" placeholder="e.g., Microeconomics Unit 3 Notes" required>
 
       <label for="department">Department / School</label>
       <select id="department" required>
@@ -137,7 +150,7 @@
       async function checkUserSession() {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error || !session) {
-          alert('Login is required to upload notes!');
+          alert('Authentication required. Please log in first.');
           window.location.assign(LOGIN_URL);
         }
       }
@@ -155,7 +168,7 @@
           const semester = semInput.value;
           const file = fileInput.files[0];
 
-          if (!file) throw new Error('Please select a PDF file.');
+          if (!file) throw new Error('Please select a valid PDF file.');
 
           const fileExt = file.name.split('.').pop();
           const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
@@ -180,7 +193,7 @@
 
           if (dbError) throw dbError;
 
-          showMessage('Upload successful! It will appear in the public list after admin approval.');
+          showMessage('Upload successful! Your resource will be visible after admin approval.');
           form.reset();
 
         } catch (err) {
