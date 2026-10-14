@@ -6,10 +6,14 @@
   <title>View Resources - GGU One Stop</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; }
-    .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .container { max-width: 850px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     h2 { color: #333; margin-bottom: 20px; text-align: center; }
+    .filters { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filters select { flex: 1; min-width: 220px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
     .resource-card { background: #f9fafb; padding: 15px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .resource-info { display: flex; flex-direction: column; gap: 4px; }
     .resource-title { font-size: 16px; font-weight: 600; color: #1f2937; }
+    .resource-meta { font-size: 12px; color: #6b7280; }
     a.download-btn { background: #4f46e5; color: white; padding: 8px 14px; border-radius: 4px; text-decoration: none; font-size: 14px; }
     a.download-btn:hover { background: #4338ca; }
   </style>
@@ -17,21 +21,85 @@
 <body>
   <div class="container">
     <h2>Approved Notes & Resources</h2>
+
+    <!-- Filters Section -->
+    <div class="filters">
+      <select id="filterDept">
+        <option value="">All Departments</option>
+        <optgroup label="Engineering & Technology">
+          <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+          <option value="Information Technology">Information Technology</option>
+          <option value="Electronics & Communication">Electronics & Communication</option>
+          <option value="Mechanical Engineering">Mechanical Engineering</option>
+          <option value="Civil Engineering">Civil Engineering</option>
+          <option value="Chemical Engineering">Chemical Engineering</option>
+          <option value="Industrial & Production">Industrial & Production</option>
+        </optgroup>
+        <optgroup label="Mathematical & Computational">
+          <option value="Computer Science (MCA/M.Sc)">Computer Science (MCA/M.Sc)</option>
+          <option value="Mathematics">Mathematics</option>
+          <option value="Statistics">Statistics</option>
+        </optgroup>
+        <optgroup label="Physical Sciences">
+          <option value="Physics">Physics</option>
+          <option value="Chemistry">Chemistry</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Pure & Applied Physics">Pure & Applied Physics</option>
+        </optgroup>
+        <optgroup label="Life Sciences">
+          <option value="Botany">Botany</option>
+          <option value="Zoology">Zoology</option>
+          <option value="Biotechnology">Biotechnology</option>
+          <option value="Microbiology">Microbiology</option>
+          <option value="Forensic Science">Forensic Science</option>
+        </optgroup>
+        <optgroup label="Other Departments">
+          <option value="Pharmacy">Pharmacy</option>
+          <option value="Management Studies">Management Studies (MBA)</option>
+          <option value="Commerce">Commerce</option>
+          <option value="Law">Law</option>
+          <option value="Economics">Economics</option>
+          <option value="English">English</option>
+          <option value="Journalism & Mass Comm">Journalism & Mass Comm</option>
+          <option value="Rural Technology">Rural Technology</option>
+          <option value="Forestry">Forestry</option>
+          <option value="Social Work">Social Work</option>
+          <option value="History">History</option>
+          <option value="Political Science">Political Science</option>
+          <option value="Hindi">Hindi</option>
+        </optgroup>
+      </select>
+
+      <select id="filterSem">
+        <option value="">All Semesters</option>
+        <option value="1st Semester">1st Semester</option>
+        <option value="2nd Semester">2nd Semester</option>
+        <option value="3rd Semester">3rd Semester</option>
+        <option value="4th Semester">4th Semester</option>
+        <option value="5th Semester">5th Semester</option>
+        <option value="6th Semester">6th Semester</option>
+        <option value="7th Semester">7th Semester</option>
+        <option value="8th Semester">8th Semester</option>
+      </select>
+    </div>
+
     <div id="resourcesList">Loading resources...</div>
   </div>
 
-  <!-- Supabase CDN Script -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://dmrlbgtnntjcobctizia.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_e21JbOKbFioWArDYBKNGAQ_eHbz_5SN';
     const dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    let allResources = [];
+
+    const filterDept = document.getElementById('filterDept');
+    const filterSem = document.getElementById('filterSem');
+    const listDiv = document.getElementById('resourcesList');
+
     async function fetchResources() {
-      const listDiv = document.getElementById('resourcesList');
-      
       try {
-        // Table ka naam lowercase 'resources' hai
         const { data, error } = await dbClient
           .from('resources')
           .select('*')
@@ -39,32 +107,56 @@
 
         if (error) throw error;
 
-        if (!data || data.length === 0) {
-          listDiv.innerHTML = '<p>No approved resources available yet.</p>';
-          return;
-        }
-
-        listDiv.innerHTML = '';
-        
-        data.forEach(item => {
-          const { data: publicURLData } = dbClient.storage
-            .from('RESOURCES') // Bucket ka naam uppercase 'RESOURCES' hai
-            .getPublicUrl(item.file_url);
-
-          const card = document.createElement('div');
-          card.className = 'resource-card';
-          card.innerHTML = `
-            <span class="resource-title">${item.title}</span>
-            <a href="${publicURLData.publicUrl}" target="_blank" class="download-btn">Download PDF</a>
-          `;
-          listDiv.appendChild(card);
-        });
+        allResources = data || [];
+        renderResources(allResources);
 
       } catch (err) {
         console.error('Error:', err.message);
         listDiv.innerHTML = '<p style="color: red;">Error loading resources: ' + err.message + '</p>';
       }
     }
+
+    function renderResources(items) {
+      if (!items || items.length === 0) {
+        listDiv.innerHTML = '<p>No approved resources available for this selection.</p>';
+        return;
+      }
+
+      listDiv.innerHTML = '';
+      
+      items.forEach(item => {
+        const { data: publicURLData } = dbClient.storage
+          .from('RESOURCES')
+          .getPublicUrl(item.file_url);
+
+        const card = document.createElement('div');
+        card.className = 'resource-card';
+        card.innerHTML = `
+          <div class="resource-info">
+            <span class="resource-title">${item.title}</span>
+            <span class="resource-meta">Dept: ${item.department || 'N/A'} | Sem: ${item.semester || 'N/A'}</span>
+          </div>
+          <a href="${publicURLData.publicUrl}" target="_blank" class="download-btn">Download PDF</a>
+        `;
+        listDiv.appendChild(card);
+      });
+    }
+
+    function applyFilters() {
+      const selectedDept = filterDept.value;
+      const selectedSem = filterSem.value;
+
+      const filtered = allResources.filter(item => {
+        const matchDept = selectedDept === "" || item.department === selectedDept;
+        const matchSem = selectedSem === "" || item.semester === selectedSem;
+        return matchDept && matchSem;
+      });
+
+      renderResources(filtered);
+    }
+
+    filterDept.addEventListener('change', applyFilters);
+    filterSem.addEventListener('change', applyFilters);
 
     fetchResources();
   </script>
